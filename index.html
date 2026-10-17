@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>RunTogether v0.4</title>
+<style>
+:root{--navy:#102a43;--blue:#1976d2;--sky:#eaf4ff;--green:#16845b;--orange:#d97706;--red:#c2413b;--ink:#172b4d;--muted:#62748a;--line:#d9e2ec;--bg:#f3f7fb;--card:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:linear-gradient(130deg,#102a43,#1769aa);color:white;padding:24px max(16px,calc((100vw - 1120px)/2));}
+header h1{margin:0;font-size:clamp(1.7rem,4vw,2.4rem)}header p{margin:5px 0 0;color:#dceeff}
+main{max-width:1120px;margin:18px auto;padding:0 14px 40px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+button,.button{border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:650;cursor:pointer;background:var(--blue);color:#fff}
+button.secondary{background:#e7eef6;color:var(--ink)}button.danger{background:#b42318}button:disabled{opacity:.45;cursor:not-allowed}
+.tab.active{background:var(--navy);color:white}.panel{display:none}.panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 3px 12px #102a4308;min-width:0}.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-6{grid-column:span 6}.span-4{grid-column:span 4}
+h2{font-size:1.2rem;margin:0 0 12px}h3{font-size:1rem;margin:0 0 8px}.muted{color:var(--muted);font-size:.92rem}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{background:#f4f8fc;border-radius:12px;padding:12px}.metric strong{display:block;font-size:1.45rem}.metric span{font-size:.83rem;color:var(--muted)}
+label{display:block;font-weight:650;font-size:.9rem;margin:8px 0 4px}input,select{width:100%;padding:10px;border:1px solid #bcccdc;border-radius:9px;background:white;color:var(--ink);font:inherit}
+.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.row>*{flex:1;min-width:120px}.row .fit{flex:0 0 auto;min-width:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{text-align:left;padding:9px 7px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-size:.82rem}td button{padding:5px 8px;font-size:.82rem}
+.pacebox{background:var(--sky);padding:12px;border-radius:12px;margin-top:10px}.bigtime{font-variant-numeric:tabular-nums;font-size:clamp(2rem,7vw,3.4rem);font-weight:800;letter-spacing:.03em}.timer-card{text-align:center}.timer-controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.timer-controls button{min-width:100px}
+.progress{height:10px;background:#e6edf4;border-radius:99px;overflow:hidden}.progress span{display:block;height:100%;background:var(--green);width:0}.split-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin:12px 0}.split{background:#f4f8fc;padding:10px;border-radius:10px}.split b{display:block}.pill{display:inline-block;border-radius:99px;background:#e7eef6;padding:3px 8px;font-size:.78rem}.good{color:var(--green)}.warn{color:var(--orange)}.bad{color:var(--red)}.hidden{display:none!important}
+canvas{width:100%;height:250px;display:block}.notice{border-left:4px solid var(--blue);background:#eef6ff;padding:10px 12px;border-radius:8px;margin:10px 0}
+footer{color:var(--muted);font-size:.82rem;text-align:center;margin-top:18px}
+@media(max-width:760px){.span-8,.span-6,.span-4{grid-column:span 12}.metrics{grid-template-columns:repeat(2,1fr)}main{padding-inline:10px}.card{padding:13px}table{font-size:.82rem}th,td{padding:7px 4px}}
+</style>
+</head>
+<body>
+<header><h1>🏃 RunTogether <span style="font-size:.55em;opacity:.8">v0.4</span></h1><p>Tom · Tika · Taki — des séances structurées, des chronos et une progression vers 10 km.</p></header>
+<main>
+<div class="tabs" role="tablist">
+<button class="tab active" data-tab="dashboard">Tableau de bord</button>
+<button class="tab secondary" data-tab="timer">Chronomètre & séance</button>
+<button class="tab secondary" data-tab="history">Historique & progrès</button>
+<button class="tab secondary" data-tab="plan">Plan 10 km</button>
+<button class="tab secondary" data-tab="settings">Réglages & données</button>
+</div>
+
+<section id="dashboard" class="panel active">
+<div class="grid">
+<div class="card span-12"><h2>Votre groupe</h2><div class="row">
+<div><label for="dashRunner">Coureur</label><select id="dashRunner"></select></div>
+<div><label for="dashDistance">Distance</label><select id="dashDistance"><option value="all">Toutes les distances</option><option>400</option><option>800</option><option>1000</option><option>2000</option><option>3000</option><option>5000</option><option>10000</option></select></div>
+<div><label for="dashPeriod">Période</label><select id="dashPeriod"><option value="all">Tout l’historique</option><option value="90">90 derniers jours</option><option value="30">30 derniers jours</option></select></div>
+</div></div>
+<div class="card span-12"><div class="metrics">
+<div class="metric"><span>Séances enregistrées</span><strong id="metricSessions">0</strong></div>
+<div class="metric"><span>Meilleur chrono filtré</span><strong id="metricBest">—</strong></div>
+<div class="metric"><span>Dernier chrono</span><strong id="metricLast">—</strong></div>
+<div class="metric"><span>Allure moyenne estimée</span><strong id="metricPace">—</strong></div>
+</div></div>
+<div class="card span-8"><h2>Évolution des chronos</h2><p class="muted">Pour une comparaison pertinente, sélectionnez une seule distance.</p><canvas id="chart" width="800" height="280" aria-label="Graphique d'évolution des chronos"></canvas></div>
+<div class="card span-4"><h2>Allures de référence</h2><div id="runnerPaces"></div><p class="muted">Allures indicatives, modifiables dans Réglages. Ce ne sont pas des objectifs médicaux ou une garantie de performance.</p></div>
+<div class="card span-12"><h2>Conseil à partir des données</h2><div id="insight" class="notice">Enregistre un premier chrono pour obtenir un conseil.</div></div>
+</div>
+</section>
+
+<section id="timer" class="panel">
+<div class="grid">
+<div class="card span-4"><h2>1. Préparer la séance</h2>
+<label for="runner">Coureur</label><select id="runner"></select>
+<label for="distance">Distance de référence</label><select id="distance"><option value="400">400 m</option><option value="800">800 m</option><option value="1000" selected>1 000 m</option><option value="2000">2 000 m</option><option value="3000">3 000 m</option><option value="5000">5 000 m</option><option value="10000">10 000 m</option></select>
+<label for="reps">Nombre de répétitions</label><input id="reps" type="number" min="1" max="30" value="4">
+<label for="rest">Récupération entre répétitions (secondes)</label><input id="rest" type="number" min="0" max="900" step="15" value="90">
+<label for="sessionNote">Note (facultatif)</label><input id="sessionNote" placeholder="Ex. piste humide, bonnes sensations">
+<div class="pacebox"><b>Temps cible par répétition</b><div id="targetTime" class="bigtime" style="font-size:1.8rem">—</div><div id="targetPace" class="muted">Selon l’allure de référence</div></div>
+<button id="buildSession" style="width:100%;margin-top:12px">Préparer la séance</button>
+</div>
+<div class="card span-8 timer-card"><h2>2. Chrono de la répétition</h2><div class="muted" id="sessionState">Aucune séance préparée</div><div class="bigtime" id="clock">00:00.0</div><div id="repLabel">Répétition — / —</div><div class="progress" style="margin:15px 0"><span id="sessionProgress"></span></div>
+<div class="timer-controls"><button id="startBtn">Démarrer</button><button id="lapBtn" class="secondary" disabled>Valider le tour</button><button id="pauseBtn" class="secondary" disabled>Pause</button><button id="resetBtn" class="danger">Réinitialiser</button></div>
+<div id="splitResults" class="split-list"></div>
+<div class="row" style="margin-top:10px"><button id="saveSession" disabled>Enregistrer la séance</button><button id="saveSingle" class="secondary">Enregistrer ce chrono seul</button></div>
+<p class="muted">Le chronomètre fonctionne sur cet appareil. Pour chronométrer plusieurs coureurs au même départ, utilisez un appareil commun et notez chaque résultat séparément.</p>
+</div>
+<div class="card span-12"><h2>3. Comparer le résultat à la cible</h2><div id="targetFeedback" class="muted">Après une répétition, RunTogether affichera l’écart par rapport au temps cible.</div></div>
+</div>
+</section>
+
+<section id="history" class="panel">
+<div class="grid"><div class="card span-12"><div class="row"><div><h2>Historique</h2><p class="muted">Les données sont enregistrées dans le navigateur de cet appareil.</p></div><div><label for="histRunner">Coureur</label><select id="histRunner"></select></div><div><label for="histDistance">Distance</label><select id="histDistance"><option value="all">Toutes</option><option>400</option><option>800</option><option>1000</option><option>2000</option><option>3000</option><option>5000</option><option>10000</option></select></div></div>
+<div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Coureur</th><th>Distance</th><th>Temps</th><th>Allure</th><th>Type</th><th>Note</th><th></th></tr></thead><tbody id="historyRows"></tbody></table></div>
+<p id="historyEmpty" class="muted">Aucun chrono pour ces filtres.</p></div></div>
+</section>
+
+<section id="plan" class="panel">
+<div class="grid">
+<div class="card span-6"><h2>Plan progressif vers 10 km</h2>
+<p class="muted">Modèle général à adapter à l’âge, à l’expérience, à la récupération et à la santé de chacun. Commencez à un niveau facile, espacez les séances et réduisez la charge en cas de douleur ou de fatigue inhabituelle.</p>
+<label for="planRunner">Coureur</label><select id="planRunner"></select>
+<label for="planLevel">Point de départ</label><select id="planLevel"><option value="beginner">Débutant / reprise</option><option value="regular">Court régulièrement (20–30 min)</option><option value="experienced">Déjà capable de courir 5 km</option></select>
+<label for="planDays">Séances par semaine</label><select id="planDays"><option value="2">2 séances</option><option value="3" selected>3 séances</option></select>
+<button id="makePlan" style="margin-top:12px">Générer mon plan indicatif</button>
+<div id="planOutput" style="margin-top:14px"></div>
+</div>
+<div class="card span-6"><h2>Repères d’entraînement</h2>
+<ul>
+<li><b>Facile :</b> allure qui permet de parler en phrases complètes.</li>
+<li><b>Régularité :</b> mieux vaut une progression modeste et durable qu’une hausse brutale du volume.</li>
+<li><b>Échauffement :</b> 5 à 10 minutes de marche active ou de footing facile avant les efforts rapides.</li>
+<li><b>Récupération :</b> laissez idéalement un jour facile ou de repos entre les séances exigeantes.</li>
+<li><b>Douleur :</b> arrêtez si une douleur vive apparaît et demandez conseil à un professionnel de santé si elle persiste.</li>
+</ul><div class="notice">Le plan est un point de départ générique, pas un avis médical ni un programme personnalisé par un entraîneur.</div>
+</div>
+</div>
+</section>
+
+<section id="settings" class="panel">
+<div class="grid">
+<div class="card span-6"><h2>Profils & allures</h2><p class="muted">Saisissez l’allure habituelle en minutes par kilomètre. Exemple : 4:30 = 4 min 30 s/km.</p>
+<div id="profileSettings"></div><button id="saveProfiles" style="margin-top:12px">Enregistrer les profils</button>
+</div>
+<div class="card span-6"><h2>Sauvegarder les données</h2><p class="muted">Exportez régulièrement un fichier JSON pour conserver les chronos ou les transférer manuellement vers un autre appareil.</p>
+<div class="row"><button id="exportJson">Exporter sauvegarde JSON</button><button id="exportCsv" class="secondary">Exporter CSV</button></div>
+<label for="importFile">Restaurer une sauvegarde JSON</label><input id="importFile" type="file" accept=".json,application/json">
+<button id="clearData" class="danger" style="margin-top:12px">Effacer tous les chronos</button>
+<div class="notice">Cette version ne synchronise pas automatiquement les appareils. Pour une utilisation sur plusieurs téléphones, il faut ajouter une base de données et un système de comptes.</div>
+</div>
+</div>
+</section>
+<footer>RunTogether v0.4 · Stockage local · Export JSON/CSV · Faites primer les sensations et la sécurité.</footer>
+</main>
+<script>
+const STORAGE_KEY='runtogether_v04';
+const defaultProfiles=[
+ {name:'Tom',pace:240,color:'#1976d2'},
+ {name:'Tika',pace:360,color:'#16845b'},
+ {name:'Taki',pace:360,color:'#d97706'}
+];
+let data={profiles:defaultProfiles,records:[]};
+try{const old=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(old&&Array.isArray(old.profiles)&&Array.isArray(old.records))data=old;}catch(e){}
+let session=null, timerStart=0, elapsedBefore=0, timerHandle=null, running=false, currentRep=0, splits=[];
+const $=id=>document.getElementById(id);
+function persist(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmtTime(sec,dec=true){if(!Number.isFinite(sec)||sec<0)return'—';let s=dec?Math.floor(sec*10)/10:Math.round(sec);let m=Math.floor(s/60),r=s-m*60;return `${String(m).padStart(2,'0')}:${(dec?r.toFixed(1):String(r).padStart(2,'0')).padStart(dec?4:2,'0')}`;}
+function parsePace(v){const m=String(v).trim().match(/^(\d{1,2}):([0-5]?\d)$/);return m?Number(m[1])*60+Number(m[2]):null;}
+function fmtPace(sec){return `${Math.floor(sec/60)}:${String(Math.round(sec%60)).padStart(2,'0')}/km`;}
+function paceInput(sec){return `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;}
+function timeForDistance(pace,dist){return pace*dist/1000;}
+function dateStr(iso){return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function selectedProfile(id){return data.profiles.find(p=>p.name===id)||data.profiles[0];}
+function fillSelects(){
+ ['runner','dashRunner','histRunner','planRunner'].forEach(id=>{let el=$(id),old=el.value;el.innerHTML=data.profiles.map(p=>`<option value="${esc(p.name)}">${esc(p.name)}</option>`).join('');if(data.profiles.some(p=>p.name===old))el.value=old;});
+}
+function renderSettings(){ $('profileSettings').innerHTML=data.profiles.map((p,i)=>`<div class="row" style="border-bottom:1px solid var(--line);padding:8px 0"><div><label>Nom</label><input data-profile-name="${i}" value="${esc(p.name)}" maxlength="24"></div><div><label>Allure min/km</label><input data-profile-pace="${i}" value="${paceInput(p.pace)}" placeholder="5:30"></div></div>`).join('');}
+function renderPaces(){ $('runnerPaces').innerHTML=data.profiles.map(p=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${esc(p.name)}</b><br><span class="muted">${fmtPace(p.pace)} · 1 km en ${fmtTime(p.pace,false)}</span></div>`).join('');}
+function updateTarget(){let p=selectedProfile($('runner').value),d=Number($('distance').value);$('targetTime').textContent=fmtTime(timeForDistance(p.pace,d),false);$('targetPace').textContent=`Allure de référence : ${fmtPace(p.pace)} · ${d} m`;}
+function showTab(id){document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.tab').forEach(x=>{const on=x.dataset.tab===id;x.classList.toggle('active',on);x.classList.toggle('secondary',!on);});if(id==='dashboard')renderDashboard();if(id==='history')renderHistory();}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+function filteredRecords(runner,distance,period){let arr=data.records.filter(r=>(!runner||runner==='all'||r.runner===runner)&&(distance==='all'||String(r.distance)===String(distance)));if(period&&period!=='all'){let cutoff=Date.now()-Number(period)*86400000;arr=arr.filter(r=>new Date(r.date).getTime()>=cutoff);}return arr.sort((a,b)=>new Date(a.date)-new Date(b.date));}
+function renderDashboard(){
+ const runner=$('dashRunner').value,dist=$('dashDistance').value,period=$('dashPeriod').value,arr=filteredRecords(runner,dist,period);
+ $('metricSessions').textContent=arr.length;
+ const best=arr.reduce((a,r)=>!a||r.seconds<a.seconds?r:a,null),last=arr[arr.length-1];
+ $('metricBest').textContent=best?fmtTime(best.seconds,false):'—';$('metricLast').textContent=last?fmtTime(last.seconds,false):'—';
+ const totalDist=arr.reduce((s,r)=>s+Number(r.distance),0),totalTime=arr.reduce((s,r)=>s+r.seconds,0);
+ $('metricPace').textContent=totalDist?fmtPace(totalTime/(totalDist/1000)):'—';
+ drawChart(arr);renderPaces();
+ if(!arr.length)$('insight').textContent='Aucun chrono dans cette sélection. Enregistre quelques résultats, puis compare une même distance au fil du temps.';
+ else if(dist==='all')$('insight').textContent='Tu as des résultats sur plusieurs distances. Sélectionne une distance précise pour évaluer l’évolution sans mélanger des efforts différents.';
+ else if(arr.length<3)$('insight').textContent=`Tu as ${arr.length} résultat(s) pour cette sélection. Continue à noter tes séances : une tendance devient plus fiable avec plusieurs chronos comparables.`;
+ else {let first=arr[0],recent=arr.slice(-Math.min(3,arr.length)),avg=recent.reduce((s,r)=>s+r.seconds,0)/recent.length,delta=avg-first.seconds;let txt=delta< -1?`Les ${recent.length} derniers chronos sont en moyenne ${fmtTime(-delta,false)} plus rapides que le premier résultat de la période.`:delta>1?`Les derniers chronos sont en moyenne ${fmtTime(delta,false)} plus lents que le premier. La fatigue, la météo ou le parcours peuvent l’expliquer : privilégie la récupération et compare des conditions similaires.`:'Les résultats sont proches du premier chrono : la régularité est bonne. Compare aussi les sensations et les conditions.';
+ $('insight').textContent=txt+' Ce repère descriptif ne remplace pas une analyse d’entraîneur.';}
+}
+function drawChart(arr){const c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#62748a';ctx.font='14px system-ui';if(!arr.length){ctx.fillText('Pas encore de données à afficher',20,35);return;}let values=arr.map(r=>r.seconds),min=Math.min(...values),max=Math.max(...values);if(min===max){min-=10;max+=10;}let left=60,right=20,top=20,bottom=45,pw=w-left-right,ph=h-top-bottom;ctx.strokeStyle='#d9e2ec';ctx.lineWidth=1;for(let i=0;i<5;i++){let y=top+i*ph/4;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();let val=max-i*(max-min)/4;ctx.fillStyle='#62748a';ctx.fillText(fmtTime(val,false),5,y+5);}ctx.strokeStyle='#1976d2';ctx.lineWidth=3;ctx.beginPath();arr.forEach((r,i)=>{let x=left+(arr.length===1?pw/2:i*pw/(arr.length-1)),y=top+(max-r.seconds)*ph/(max-min);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();arr.forEach((r,i)=>{let x=left+(arr.length===1?pw/2:i*pw/(arr.length-1)),y=top+(max-r.seconds)*ph/(max-min);ctx.fillStyle='#1976d2';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();});ctx.fillStyle='#62748a';ctx.fillText(dateStr(arr[0].date),left,h-12);let end=dateStr(arr[arr.length-1].date),tw=ctx.measureText(end).width;ctx.fillText(end,w-right-tw,h-12);}
+function renderHistory(){const arr=filteredRecords($('histRunner').value,$('histDistance').value,'all').slice().reverse();$('historyRows').innerHTML=arr.map(r=>`<tr><td>${dateStr(r.date)}</td><td>${esc(r.runner)}</td><td>${r.distance} m</td><td><b>${fmtTime(r.seconds,false)}</b></td><td>${fmtPace(r.seconds/(r.distance/1000))}</td><td>${esc(r.type||'Chrono')}</td><td>${esc(r.note||'')}</td><td><button class="danger" data-delete="${r.id}">Suppr.</button></td></tr>`).join('');$('historyEmpty').classList.toggle('hidden',arr.length>0);document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{if(confirm('Supprimer ce chrono ?')){data.records=data.records.filter(r=>r.id!==b.dataset.delete);persist();renderHistory();renderDashboard();}});}
+function makeRecord(seconds,type,distance,runner,note){if(!Number.isFinite(seconds)||seconds<=0)return;data.records.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),date:new Date().toISOString(),runner,distance:Number(distance),seconds:Number(seconds),type,note:note||''});persist();}
+function elapsed(){return elapsedBefore+(running?(performance.now()-timerStart)/1000:0);}
+function updateClock(){ $('clock').textContent=fmtTime(elapsed());}
+function stopTick(){if(timerHandle)clearInterval(timerHandle);timerHandle=null;}
+function resetTimer(){stopTick();running=false;elapsedBefore=0;timerStart=0;currentRep=0;splits=[];session=null;$('clock').textContent='00:00.0';$('sessionState').textContent='Aucune séance préparée';$('repLabel').textContent='Répétition — / —';$('sessionProgress').style.width='0%';$('splitResults').innerHTML='';$('startBtn').disabled=false;$('startBtn').textContent='Démarrer';$('lapBtn').disabled=true;$('pauseBtn').disabled=true;$('saveSession').disabled=true;$('targetFeedback').textContent='Après une répétition, RunTogether affichera l’écart par rapport au temps cible.';}
+function buildSession(){resetTimer();session={runner:$('runner').value,distance:Number($('distance').value),reps:Math.max(1,Math.min(30,Number($('reps').value)||1)),rest:Math.max(0,Number($('rest').value)||0),note:$('sessionNote').value.trim(),target:timeForDistance(selectedProfile($('runner').value).pace,Number($('distance').value))};$('sessionState').textContent=`Séance préparée · ${session.runner} · ${session.reps} × ${session.distance} m`; $('repLabel').textContent=`Répétition 1 / ${session.reps}`;$('startBtn').textContent='Démarrer la séance';}
+function start(){if(!session)buildSession();if(!session)return;if(currentRep>=session.reps){$('targetFeedback').textContent='Toutes les répétitions sont terminées. Enregistre la séance ou réinitialise.';return;}if(!running){running=true;timerStart=performance.now();timerHandle=setInterval(updateClock,70);$('startBtn').disabled=true;$('lapBtn').disabled=false;$('pauseBtn').disabled=false;$('sessionState').textContent=`En cours · ${session.runner}`;}}
+function pause(){if(!running)return;elapsedBefore=elapsed();running=false;stopTick();updateClock();$('startBtn').disabled=false;$('startBtn').textContent='Reprendre';$('lapBtn').disabled=true;$('pauseBtn').disabled=true;$('sessionState').textContent='En pause';}
+function lap(){if(!running||!session)return;let sec=elapsed();splits.push(sec);currentRep++;running=false;stopTick();elapsedBefore=0;timerStart=0;$('clock').textContent='00:00.0';renderSplits();$('sessionProgress').style.width=(currentRep/session.reps*100)+'%';$('targetFeedback').textContent=`Répétition ${currentRep} : ${fmtTime(sec,false)}, cible ${fmtTime(session.target,false)}. Écart : ${sec-session.target>=0?'+':''}${fmtTime(Math.abs(sec-session.target),false)} ${sec<=session.target?'plus rapide ou égal à la cible':'plus lent que la cible'}.`;if(currentRep>=session.reps){$('repLabel').textContent='Séance terminée';$('sessionState').textContent='Toutes les répétitions sont terminées';$('startBtn').disabled=true;$('lapBtn').disabled=true;$('pauseBtn').disabled=true;$('saveSession').disabled=false;}else{$('repLabel').textContent=`Répétition ${currentRep+1} / ${session.reps}`;$('sessionState').textContent=session.rest?`Récupération prévue : ${session.rest} s (à gérer manuellement)`:'Prêt pour la répétition suivante';$('startBtn').disabled=false;$('startBtn').textContent='Démarrer répétition suivante';$('lapBtn').disabled=true;$('pauseBtn').disabled=true;$('saveSession').disabled=false;}}
+function renderSplits(){$('splitResults').innerHTML=splits.map((s,i)=>`<div class="split"><span class="muted">Rép. ${i+1}</span><b>${fmtTime(s,false)}</b><small class="${s<=session.target?'good':'warn'}">${s<=session.target?'Dans la cible':'Au-dessus de la cible'}</small></div>`).join('');}
+function saveSession(){if(!session||!splits.length)return;splits.forEach((s,i)=>makeRecord(s,`Séance ${i+1}/${splits.length}`,session.distance,session.runner,session.note));persist();$('saveSession').disabled=true;renderDashboard();renderHistory();alert(`${splits.length} chrono(s) enregistré(s).`);}
+function saveSingle(){let sec=elapsed();if(running){sec=elapsed();pause();}if(sec<=0){const raw=prompt('Temps en secondes (ex. 95.4) :');sec=Number(raw);}if(!Number.isFinite(sec)||sec<=0){alert('Temps non valide.');return;}makeRecord(sec,'Chrono seul',Number($('distance').value),$('runner').value,$('sessionNote').value.trim());renderDashboard();renderHistory();alert('Chrono enregistré.');}
+function planHtml(level,days,name){const sessions=Number(days);let weeks=[];if(level==='beginner'){weeks=[['Marche/course facile 20 min','Marche/course facile 20 min','Facile 20–25 min'],['Marche/course 22–25 min','Marche/course 22–25 min','Facile 25 min'],['Facile 25 min','Facile 25 min','Facile 25–30 min'],['Semaine allégée : 20 min faciles','20 min faciles ou marche','25 min faciles']];}else if(level==='regular'){weeks=[['Facile 25–30 min','6 × 1 min un peu soutenue / 2 min facile','Sortie facile 30–35 min'],['Facile 30 min','5 × 2 min soutenues / 2 min faciles','Sortie facile 35–40 min'],['Facile 30 min','6 × 2 min soutenues / 2 min faciles','Sortie facile 40 min'],['Semaine allégée : 25 min faciles','20–25 min faciles','30–35 min faciles']];}else{weeks=[['Facile 30 min','6 × 2 min soutenues / 2 min faciles','Sortie facile 40–45 min'],['Facile 30–35 min','5 × 3 min soutenues / 2 min faciles','Sortie facile 45–50 min'],['Facile 35 min','6 × 3 min soutenues / 2 min faciles','Sortie facile 50–55 min'],['Semaine allégée : 25–30 min faciles','25 min faciles','40–45 min faciles']];}
+let out=`<p><b>Plan de départ pour ${esc(name)} · 4 semaines</b></p><p class="muted">Chaque semaine, garde ${sessions} séances au maximum. Si tu choisis 2, prends les séances 1 et 3. Marche au besoin et répète une semaine si elle est difficile.</p>`;
+weeks.forEach((w,i)=>{out+=`<div class="card" style="padding:12px;margin:8px 0"><b>Semaine ${i+1}</b><ul>${w.slice(0,sessions===2?1:3).map(x=>`<li>${x}</li>`).join('')}${sessions===2?`<li>${w[2]}</li>`:''}</ul></div>`;});
+out+='<p class="muted">Ce cycle de 4 semaines n’est pas une promesse d’atteindre 10 km. Réévalue ensuite la durée facile et augmente progressivement, avec des semaines allégées régulières.</p>';return out;}
+function exportFile(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);}
+function csvEscape(v){return '"'+String(v??'').replace(/"/g,'""')+'"';}
+function exportCsv(){let rows=[['date','coureur','distance_m','temps_secondes','type','note'],...data.records.map(r=>[r.date,r.runner,r.distance,r.seconds,r.type,r.note])];exportFile('runtogether-chronos.csv','\ufeff'+rows.map(r=>r.map(csvEscape).join(';')).join('\r\n'),'text/csv;charset=utf-8');}
+function exportJson(){exportFile('runtogether-sauvegarde.json',JSON.stringify(data,null,2),'application/json');}
+$('runner').addEventListener('change',updateTarget);$('distance').addEventListener('change',updateTarget);
+$('buildSession').onclick=buildSession;$('startBtn').onclick=start;$('pauseBtn').onclick=pause;$('lapBtn').onclick=lap;$('resetBtn').onclick=()=>{if(confirm('Réinitialiser la séance en cours ? Les chronos non enregistrés seront perdus.'))resetTimer();};$('saveSession').onclick=saveSession;$('saveSingle').onclick=saveSingle;
+['dashRunner','dashDistance','dashPeriod'].forEach(id=>$(id).addEventListener('change',renderDashboard));['histRunner','histDistance'].forEach(id=>$(id).addEventListener('change',renderHistory));
+$('makePlan').onclick=()=>{$('planOutput').innerHTML=planHtml($('planLevel').value,$('planDays').value,$('planRunner').value);};
+$('saveProfiles').onclick=()=>{let names=[],newProfiles=[];for(let i=0;i<data.profiles.length;i++){let name=$(`[data-profile-name="${i}"]`).value.trim(),pace=parsePace($(`[data-profile-pace="${i}"]`).value);if(!name||pace===null||pace<120||pace>1200){alert('Vérifie les noms et les allures (format m:ss, entre 2:00 et 20:00 par km).');return;}if(names.includes(name)){alert('Chaque coureur doit avoir un nom différent.');return;}names.push(name);newProfiles.push({...data.profiles[i],name,pace});}data.profiles=newProfiles;persist();fillSelects();renderSettings();updateTarget();renderPaces();renderDashboard();renderHistory();alert('Profils enregistrés.');};
+$('exportJson').onclick=exportJson;$('exportCsv').onclick=exportCsv;
+$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const incoming=JSON.parse(await f.text());if(!Array.isArray(incoming.profiles)||!Array.isArray(incoming.records))throw Error('Format invalide');if(!confirm('Remplacer les données actuelles par cette sauvegarde ?'))return;data={profiles:incoming.profiles,records:incoming.records};persist();fillSelects();renderSettings();updateTarget();renderDashboard();renderHistory();alert('Sauvegarde restaurée.');}catch(err){alert('Impossible de lire ce fichier JSON.');}e.target.value='';};
+$('clearData').onclick=()=>{if(confirm('Effacer définitivement tous les chronos de ce navigateur ? Pense à exporter une sauvegarde avant.')){data.records=[];persist();renderDashboard();renderHistory();}};
+fillSelects();renderSettings();renderPaces();updateTarget();renderDashboard();renderHistory();
+</script>
+</body></html>
