@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101827">
+<title>RunTogether V0.9 — bilan de séance et bipeur</title>
+<style>
+:root{--bg:#101827;--panel:#182337;--panel2:#202e45;--text:#f4f7fb;--muted:#a9b6c9;--lime:#c7f36b;--blue:#8ac8ff;--line:#34445d;--red:#ff8e8e}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#101827,#17283b);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:24px 20px 18px;max-width:1180px;margin:auto}h1{margin:0;font-size:clamp(28px,5vw,42px);letter-spacing:-1px}h1 span{color:var(--lime)}header p{margin:8px 0 0;color:var(--muted)}
+main{max-width:1180px;margin:auto;padding:0 20px 40px;display:grid;gap:18px}.panel{background:rgba(24,35,55,.96);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 10px 35px #0002}
+h2{font-size:20px;margin:0 0 14px}h3{font-size:16px;margin:0 0 8px}.small{font-size:13px;color:var(--muted)}.tag{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:3px 9px;font-size:12px;color:var(--muted)}
+.people{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.person{background:var(--panel2);border-radius:14px;padding:15px}.person .name{font-weight:750;font-size:18px}.pace{font-size:26px;font-weight:800;color:var(--lime);margin:4px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}input,select,button{font:inherit}input,select{width:100%;background:#0f1929;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px}button{border:0;border-radius:11px;padding:11px 15px;font-weight:750;cursor:pointer;background:var(--lime);color:#142012}button.secondary{background:#2c3c54;color:var(--text);border:1px solid var(--line)}button.danger{background:#4a2934;color:#ffdada;border:1px solid #76404b}button:disabled{opacity:.4;cursor:not-allowed}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.timer{font-size:clamp(42px,8vw,70px);font-variant-numeric:tabular-nums;font-weight:850;letter-spacing:-2px;text-align:center;margin:8px 0;color:var(--lime)}.current{text-align:center;color:var(--muted);margin-bottom:12px}
+.finish-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.finish{background:var(--panel2);border:1px solid var(--line);color:var(--text);min-height:74px}.finish strong{display:block;font-size:16px}.finish span{font-size:13px;color:var(--muted)}.finish.done{border-color:var(--lime);background:#263a31}.series-list{display:grid;gap:8px}.series-item{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel2);padding:12px;border-radius:12px}.series-item.active{outline:2px solid var(--lime)}.series-item small{display:block;color:var(--muted)}.series-item button{padding:7px 10px}
+.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:540px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-size:13px;font-weight:600}.empty{color:var(--muted);padding:12px 0}.notice{background:#1b342e;border:1px solid #3f6754;border-radius:12px;padding:12px;color:#d7ffe3;font-size:14px}.warning{background:#3a2f1d;border:1px solid #74603a;border-radius:12px;padding:12px;color:#ffe8b0;font-size:14px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.mode-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.mode-tabs button.selected{background:var(--lime);color:#142012}.mode-tabs button:not(.selected){background:#2c3c54;color:var(--text);border:1px solid var(--line)}.runner-timer{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}.runner-timer .timer{font-size:clamp(32px,5vw,48px);margin:5px 0}.runner-timer .actions{justify-content:center}.hidden{display:none!important}.mini{min-width:0}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.stat{background:var(--panel2);border-radius:14px;padding:15px}.stat strong{display:block;font-size:25px;color:var(--lime)}.stat span{font-size:13px;color:var(--muted)}.chartbox{background:#111c2d;border-radius:14px;padding:12px;overflow:hidden}canvas{width:100%;height:230px;display:block}.filters{display:flex;gap:10px;flex-wrap:wrap}.filters>div{min-width:160px;flex:1}main>*,.grid2>*{min-width:0}body.sun{--bg:#fff;--panel:#fff;--panel2:#f0f2f5;--text:#000;--muted:#1a1a1a;--lime:#0b5d00;--blue:#003a99;--line:#000;--red:#a40000;background:#fff;color:#000}body.sun .panel{background:#fff;border:2px solid #000;box-shadow:none}body.sun input,body.sun select{background:#fff;color:#000;border:2px solid #000}body.sun button{background:#0b5d00;color:#fff;border:2px solid #000}body.sun button.secondary,body.sun .mode-tabs button:not(.selected){background:#fff;color:#000;border:2px solid #000}body.sun .mode-tabs button.selected{background:#0b5d00;color:#fff}body.sun button.danger{background:#fff;color:#a40000;border:2px solid #a40000}body.sun .finish,body.sun .series-item,body.sun .person,body.sun .stat,body.sun .runner-timer{background:#f0f2f5;color:#000;border:2px solid #000}body.sun .finish.done{background:#cfeccb}body.sun .notice,body.sun .warning,body.sun .restbox{background:#fff;color:#000;border:2px solid #000}body.sun .timer{color:#000;font-size:clamp(56px,17vw,120px)}body.sun .runner-timer .timer{font-size:clamp(40px,10vw,72px)}body.sun .restbox .timer{color:#003a99}body.sun .small,body.sun label,body.sun header p,body.sun th{color:#111}body.sun .tag{color:#000;border-color:#000}body.sun .bar{background:#d5d9de}body.sun .finish{min-height:96px}body.sun .lapbtn{min-height:96px;font-size:26px}body.sun td,body.sun th{border-bottom-color:#000}.bar{height:8px;background:#0f1929;border-radius:99px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--lime);border-radius:99px}.lapbtn{width:100%;min-height:72px;font-size:22px;margin-top:8px}.restbox{background:#1d2f3f;border:2px solid var(--blue);border-radius:14px;padding:14px;text-align:center;margin-top:14px}.restbox .timer{color:var(--blue);margin:4px 0}.toggles{display:grid;gap:8px;margin-top:14px}label.check{display:flex;align-items:center;gap:9px;color:var(--text);font-size:14px;margin:0}label.check input{width:auto}
+@media(max-width:760px){.people{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}.finish-grid{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.panel{padding:16px}header{padding-top:20px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.runner-timer{padding:12px}}
+</style>
+</head>
+<body>
+<header><button id="sunToggle" class="secondary" style="float:right;margin-top:6px">☀️ Mode plein soleil</button><h1>Run<span>Together</span> 🏃 <span class="tag" style="vertical-align:middle;letter-spacing:0">V0.9</span></h1><p>Vos séances, vos chronos et votre progression vers le 10 km.</p></header>
+<main>
+<section class="panel" id="syncPanel">
+ <div class="section-head"><h2>Synchronisation entre appareils</h2><span class="tag" id="syncBadge">Mode local</span></div>
+ <p class="small">Les chronos restent enregistrés sur cet appareil. Configure Firebase pour les retrouver automatiquement sur ton téléphone, ta tablette ou ton ordinateur avec le même compte.</p>
+ <div class="fields">
+  <div><label for="syncEmail">Adresse e-mail</label><input id="syncEmail" type="email" autocomplete="username" placeholder="toi@exemple.fr"></div>
+  <div><label for="syncPassword">Mot de passe</label><input id="syncPassword" type="password" autocomplete="current-password" placeholder="6 caractères minimum"></div>
+ </div>
+ <div class="actions"><button id="syncLogin">Connexion</button><button id="syncRegister" class="secondary">Créer un compte</button><button id="syncLogout" class="secondary hidden">Déconnexion</button><button id="syncNow" class="secondary">Synchroniser maintenant</button></div>
+ <p class="small" id="syncMessage" role="status">Synchronisation cloud non configurée : fonctionnement local disponible.</p>
+</section>
+<section class="panel"><div class="section-head"><h2>Le groupe</h2><span class="tag">Piste de 400 m</span></div><div class="people" id="people"></div><p class="small">Modifiez l’allure actuelle pour actualiser les projections. Les temps théoriques sur 10 km ne sont pas des prédictions.</p></section>
+<div class="grid2">
+<section class="panel"><h2>1. Préparer la séance</h2><div class="fields">
+<div><label for="seriesName">Nom de la série</label><input id="seriesName" value="Fractionné court" maxlength="50"></div>
+<div><label for="distance">Distance par répétition</label><select id="distance"><option value="400">400 m</option><option value="800">800 m</option><option value="1000">1 000 m</option><option value="1600">1 600 m</option><option value="2000">2 000 m</option><option value="5000">5 000 m</option><option value="custom">Autre distance…</option></select></div>
+<div id="customWrap" hidden><label for="customDistance">Distance personnalisée (m)</label><input id="customDistance" type="number" min="50" step="50" value="1200"></div>
+<div><label for="reps">Nombre de répétitions</label><input id="reps" type="number" min="1" max="30" value="6"></div>
+<div><label for="rest">Récupération (secondes)</label><input id="rest" type="number" min="0" max="1800" step="15" value="90"></div>
+</div><div class="actions"><button id="addSeries">Ajouter à la séance</button><button class="secondary" id="starter">Séance exemple</button></div><div class="series-list" id="seriesList"></div></section>
+<section class="panel"><h2>2. Chronométrage</h2><div class="mode-tabs"><button id="sharedMode" class="selected">Téléphone partagé</button><button id="individualMode">Chronos individuels</button></div>
+<div id="sharedPane"><div class="current" id="repLabel">Ajoutez une série puis sélectionnez-la.</div><div class="timer" id="timer">00:00.0</div><div class="actions" style="justify-content:center"><button id="start">Démarrer la répétition</button><button class="secondary" id="reset">Réinitialiser</button></div><p class="small">Départ commun : touchez le bouton de chaque coureur à son arrivée. Le temps cible de chacun est calculé selon son allure actuelle.</p><div class="finish-grid" id="finishGrid"></div><div id="targetFeedback" class="notice" style="margin-top:12px">Les écarts à l’objectif apparaîtront après les arrivées.</div></div>
+<div id="individualPane" class="hidden"><div class="current" id="individualRepLabel">Sélectionnez une série.</div><div id="individualTargetFeedback" class="notice" style="margin-bottom:12px">Chaque chrono sera comparé à l’objectif du coureur.</div><p class="small">Chaque coureur démarre et arrête son propre chrono. Les appareils ne se synchronisent pas automatiquement.</p><div class="finish-grid" id="individualTimers"></div></div>
+<div id="restBox" class="restbox hidden" role="status" aria-live="polite"><div class="small" id="restLabel"></div><div class="timer" id="restTimer">00:00</div><div class="actions" style="justify-content:center" id="restActions"><button class="secondary" id="restAdd">+15 s</button><button id="restSkipNow">Fin de la récup.</button></div></div>
+<div class="actions"><button class="secondary" id="startRestBtn">Lancer la récupération</button><button class="secondary" id="nextRep">Répétition suivante →</button><button class="secondary" id="skipRep">Passer cette répétition</button></div>
+<div class="toggles"><label class="check"><input type="checkbox" id="optChain"> Enchaînement automatique : après la récup., passe à la répétition ou à la série suivante</label><label class="check"><input type="checkbox" id="optAutoStart"> Départ automatique à la fin de la récup. (chrono partagé uniquement)</label></div><p class="small">La récupération démarre dès que Tom, Tika et Taki ont tous enregistré leur arrivée. Si l’un de vous ne court pas cette répétition, touchez « Lancer la récupération ». Bips et vibration pendant les 3 dernières secondes.</p>
+<div id="paceBox"></div><p id="restInfo" class="small"></p></section>
+</div>
+<section class="panel" id="autoTargetPanel"></section>
+<section class="panel" id="longRunPanel"></section>
+<section class="panel"><div class="section-head"><h2>3. Tableau de bord de progression</h2><span class="tag">Basé sur les chronos enregistrés</span></div>
+<div class="filters"><div><label for="filterRunner">Coureur</label><select id="filterRunner"><option value="all">Tout le groupe</option><option value="tom">Tom</option><option value="tika">Tika</option><option value="taki">Taki</option></select></div><div><label for="filterDistance">Distance</label><select id="filterDistance"><option value="all">Toutes les distances</option><option value="400">400 m</option><option value="800">800 m</option><option value="1000">1 000 m</option><option value="1600">1 600 m</option><option value="2000">2 000 m</option><option value="5000">5 000 m</option><option value="10000">10 000 m</option></select></div></div>
+<div class="stats" id="stats" style="margin-top:12px"></div>
+<div class="grid2" style="margin-top:16px"><div><h3>Évolution des chronos</h3><p class="small">Les points sont affichés dans l’ordre d’enregistrement. Comparez uniquement des chronos sur la même distance.</p><div class="chartbox"><canvas id="chart"></canvas></div></div><div><h3>Meilleurs chronos par distance</h3><div class="table-wrap"><table><thead><tr><th>Coureur</th><th>Distance</th><th>Meilleur temps</th><th>Enregistrés</th></tr></thead><tbody id="bestTable"></tbody></table></div></div></div>
+</section>
+<section class="panel"><div class="section-head"><h2>4. Historique des résultats</h2><div class="actions"><button class="secondary" id="export">Exporter CSV</button><button class="secondary" id="exportJson">Sauvegarder JSON</button><label class="secondary" style="padding:10px 12px;border-radius:11px;cursor:pointer">Importer JSON<input id="importJson" type="file" accept=".json,application/json" style="display:none"></label><button class="danger" id="clearHistory">Effacer historique</button></div></div>
+<div class="table-wrap"><table><thead><tr><th>Date</th><th>Série / répétition</th><th>Distance</th><th>Tom</th><th>Tika</th><th>Taki</th></tr></thead><tbody id="results"></tbody></table></div>
+<div style="margin-top:16px"><h3>Bilan automatique par coureur</h3><div id="coachSummary" class="series-list"></div><p class="small">Le bilan décrit uniquement les chronos enregistrés. Il ne tient pas compte de la météo, du dénivelé, de la fatigue ou de l’effort ressenti.</p></div><p class="small">V0.5 conserve l’interface et les chronos simultanés, ajoute la correction individuelle des résultats et un bilan automatique. Les données sont enregistrées dans le navigateur. V0.5 permet de corriger ou supprimer un chrono individuellement. Exportez régulièrement une sauvegarde. GitHub Pages ne synchronise pas les données entre appareils.</p></section>
+<section class="panel" id="sessionPanel"></section>
+<section class="panel"><h2>5. Objectif 10 km</h2><div class="notice">Progressez graduellement, gardez une allure confortable sur les sorties faciles et évitez de courir toutes les répétitions à fond. Arrêtez en cas de douleur inhabituelle.</div><div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>Coureur</th><th>Allure actuelle</th><th>Projection 10 km*</th><th>Meilleur chrono</th><th>Évolution sur distance sélectionnée</th></tr></thead><tbody id="goalRows"></tbody></table></div><p class="small">*Projection mathématique à allure constante. La progression est calculée à partir du premier et du dernier chrono enregistré pour une même distance.</p></section>
+
+<section class="panel"><div class="section-head"><h2>6. Plan de progression — version 0.6</h2><span class="tag">Objectif : courir plus longtemps progressivement</span></div>
+<div class="grid2">
+<div><div class="fields">
+<div><label for="planRunner">Coureur</label><select id="planRunner"><option value="tom">Tom</option><option value="tika">Tika</option><option value="taki">Taki</option></select></div>
+<div><label for="planLevel">Niveau de départ</label><select id="planLevel"><option value="beginner">Débutant / reprise</option><option value="regular">Court déjà 20–30 min</option><option value="fivek">Peut déjà courir 5 km</option></select></div>
+<div><label for="planDays">Séances par semaine</label><select id="planDays"><option value="2">2 séances</option><option value="3" selected>3 séances</option></select></div>
+</div><div class="actions"><button id="makePlan">Générer le plan de 4 semaines</button></div><div id="planOutput" style="margin-top:12px"></div></div>
+<div><div class="notice">Plan indicatif : adaptez-le à vos capacités, à votre récupération et à vos sensations. Gardez les sorties faciles à une allure qui permet de parler. Répétez une semaine si nécessaire, et arrêtez en cas de douleur inhabituelle.</div><p class="small" style="margin-top:12px">Ce plan ne promet pas une date d’atteinte du 10 km et ne remplace pas les conseils d’un professionnel de santé ou d’un entraîneur. La progression doit rester graduelle.</p></div>
+</div></section>
+
+</main>
+<script src="./state.js"></script>
+<script>
+const RUNNERS=[{id:'tom',name:'Tom',pace:4},{id:'tika',name:'Tika',pace:6},{id:'taki',name:'Taki',pace:6}],$=id=>document.getElementById(id);
+let state=JSON.parse(localStorage.getItem('runtogether_v04')||'null')||JSON.parse(localStorage.getItem('runtogether_v3')||'null')||JSON.parse(localStorage.getItem('runtogether_v2')||'null')||JSON.parse(localStorage.getItem('runtogether_v1')||'null')||{series:[],results:[],paces:{tom:4,tika:6,taki:6}};
+state=rtNormalize(state);
+let activeSeries=0,repIndex=0,sharedStart=null,sharedRaf=null,sharedFinished={},mode='shared',restEnd=null,restTimerId=null,lastBeepSec=null,repDone=new Set(),sharedLaps={};
+let individual={tom:{start:null,elapsed:0,raf:null,running:false},tika:{start:null,elapsed:0,raf:null,running:false},taki:{start:null,elapsed:0,raf:null,running:false}};
+function save(){localStorage.setItem('runtogether_v04',JSON.stringify(state));if(window.rtCloudSave)window.rtCloudSave(state);}
+function fmt(sec,tenths=true){if(sec==null||!Number.isFinite(Number(sec)))return '—';sec=Number(sec);const w=Math.floor(sec),m=Math.floor(w/60),s=w%60;return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}${tenths?'.'+Math.floor((sec-w)*10):''}`;}
+function paceText(min){let t=Math.round(min*60);return `${Math.floor(t/60)}:${String(t%60).padStart(2,'0')} /km`;}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function current(){return state.series[activeSeries];}
+function runnerName(id){return RUNNERS.find(r=>r.id===id)?.name||id;}
+function targetSeconds(id,distance){if(prefs.autoTargets&&window.rtAutoTarget){const t=window.rtAutoTarget(id,distance);if(t&&Number.isFinite(t.seconds)&&t.seconds>0)return t.seconds;}return Number(state.paces[id]||RUNNERS.find(r=>r.id===id)?.pace||6)*60*Number(distance)/1000;}
+function targetDiffText(id,time,distance,stored){let target=Number.isFinite(stored)?stored:targetSeconds(id,distance),delta=Number(time)-target;return `${delta<=0?'−':'+'}${fmt(Math.abs(delta))} ${delta<=0?'devant la cible':'après la cible'} (cible ${fmt(target,false)})`;}
+
+function filteredResults(){let runner=$('filterRunner').value,dist=$('filterDistance').value;return state.results.filter(x=>(runner==='all'||x.runner===runner)&&(dist==='all'||String(x.distance)===dist));}
+function renderPeople(){$('people').innerHTML=RUNNERS.map(r=>`<div class="person"><div class="name">${r.name}</div><div class="pace">${paceText(state.paces[r.id]||r.pace)}</div><label>Allure actuelle (min/km)</label><input type="number" min="2" max="12" step=".1" value="${state.paces[r.id]||r.pace}" data-pace="${r.id}"><div class="small" style="margin-top:7px">400 m estimés : ${fmt((state.paces[r.id]||r.pace)*24,false)}</div></div>`).join('');document.querySelectorAll('[data-pace]').forEach(i=>i.onchange=e=>{let n=Number(e.target.value);if(n>=2&&n<=12){state.paces[e.target.dataset.pace]=n;state.pacesUpdatedAt[e.target.dataset.pace]=Date.now();save();renderPeople();renderGoals();}});}
+function renderSeries(){$('seriesList').innerHTML=state.series.length?state.series.map((s,i)=>`<div class="series-item ${i===activeSeries?'active':''}"><div><strong>${esc(s.name)}</strong><small>${s.distance} m × ${s.reps} · récup. ${s.rest}s</small></div><div><button class="secondary" data-select="${i}">Choisir</button> <button class="danger" data-delete="${i}">×</button></div></div>`).join(''):'<p class="small">Aucune série ajoutée.</p>';document.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>{activeSeries=+b.dataset.select;repIndex=0;resetTimers();renderAll();});document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{{const gone=state.series.splice(+b.dataset.delete,1)[0];if(gone)state.deleted.series[gone.id]=Date.now();}activeSeries=Math.min(activeSeries,Math.max(0,state.series.length-1));repIndex=0;resetTimers();save();renderAll();});}
+function resetTimers(){stopRest();repDone.clear();sharedLaps={};stopShared();Object.values(individual).forEach(t=>{if(t.raf)cancelAnimationFrame(t.raf);Object.assign(t,{start:null,elapsed:0,raf:null,running:false,laps:[]});});sharedFinished={};$('timer').textContent='00:00.0';}
+function stopShared(){if(sharedRaf)cancelAnimationFrame(sharedRaf);sharedRaf=null;sharedStart=null;}
+function sharedElapsed(){return sharedStart===null?0:(performance.now()-sharedStart)/1000;}
+function sharedTick(){if(sharedStart!==null){ $('timer').textContent=fmt(sharedElapsed());sharedRaf=requestAnimationFrame(sharedTick);}}
+function record(id,time,splits){let s=current();if(!s)return;let target=targetSeconds(id,s.distance);state.results.push({id:(crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random()),date:new Date().toISOString(),series:s.name,seriesIndex:activeSeries,rep:repIndex+1,distance:Number(s.distance),runner:id,time:Number(time),targetTime:target,diff:Number(time)-target,updatedAt:Date.now(),...(splits&&splits.length?{splits,lap:LAP}:{})});save();renderResults();renderDashboard();renderGoals();renderTargetFeedback();if(window.rtRenderExtra)window.rtRenderExtra();repDone.add(id);if(repDone.size===RUNNERS.length)startRest();}
+function renderTargetFeedback(){let s=current();if(!s)return;let done=Object.keys(sharedFinished);let el=$('targetFeedback');if(el){if(!done.length){el.textContent='Les écarts à l’objectif apparaîtront après les arrivées.';}else{el.innerHTML=done.map(id=>`<div><strong>${runnerName(id)} :</strong> ${targetDiffText(id,sharedFinished[id],s.distance)}</div>`).join('');}}let ie=$('individualTargetFeedback');if(ie){ie.textContent=`Cibles actuelles sur ${s.distance} m : `+RUNNERS.map(r=>`${r.name} ${fmt(targetSeconds(r.id,s.distance),false)}`).join(' · ');}}
+function renderShared(){let s=current();$('repLabel').textContent=s?`${s.name} — répétition ${Math.min(repIndex+1,s.reps)} / ${s.reps} · ${s.distance} m`:'Ajoutez une série puis sélectionnez-la.';$('start').disabled=!s||repIndex>=s.reps||sharedStart!==null;$('reset').disabled=!s;$('nextRep').disabled=!s||repIndex>=s.reps;$('skipRep').disabled=!s||repIndex>=s.reps;$('finishGrid').innerHTML=RUNNERS.map(r=>`<div><button class="finish ${sharedFinished[r.id]!==undefined?'done':''}" data-finish="${r.id}" ${!s||sharedStart===null||sharedFinished[r.id]!==undefined?'disabled':''}><strong>${r.name}</strong><span>${sharedFinished[r.id]!==undefined?fmt(sharedFinished[r.id]):'Enregistrer l’arrivée'}</span><span style="display:block;margin-top:4px">Cible : ${s?fmt(targetSeconds(r.id,s.distance),false):'—'}</span></button>${lapBtn(r)}</div>`).join('');document.querySelectorAll('[data-rlap]').forEach(b=>b.onclick=()=>repLap(b.dataset.rlap));document.querySelectorAll('[data-finish]').forEach(b=>b.onclick=()=>{if(sharedStart===null)return;let id=b.dataset.finish;sharedFinished[id]=sharedElapsed();record(id,sharedFinished[id],makeSplits(sharedLaps[id],sharedFinished[id],s.distance));renderShared();renderTargetFeedback();if(RUNNERS.every(r=>sharedFinished[r.id]!==undefined)){stopShared();$('timer').textContent=fmt(Math.max(...Object.values(sharedFinished)));renderShared();}});}
+function renderIndividual(){let s=current();$('individualRepLabel').textContent=current()?`${current().name} — répétition ${Math.min(repIndex+1,current().reps)} / ${current().reps} · ${current().distance} m`:'Sélectionnez une série.';$('individualTimers').innerHTML=RUNNERS.map(r=>{let t=individual[r.id],val=t.running?t.elapsed+(performance.now()-t.start)/1000:t.elapsed;return `<div class="runner-timer"><strong>${r.name}</strong><div class="small">Cible : ${s?fmt(targetSeconds(r.id,s.distance),false):"—"}</div><div class="timer" id="indtime-${r.id}">${fmt(val)}</div><div class="actions"><button data-indstart="${r.id}" ${!current()||repIndex>=current().reps||t.running?'disabled':''}>${t.elapsed>0?'Reprendre':'Démarrer'}</button><button class="secondary" data-indstop="${r.id}" ${!t.running?'disabled':''}>Arrivée</button>${indLapBtn(r.id)}<button class="secondary" data-indreset="${r.id}">Reset</button></div></div>`;}).join('');document.querySelectorAll('[data-indstart]').forEach(b=>b.onclick=()=>{let id=b.dataset.indstart,t=individual[id];if(t.running)return;t.start=performance.now();t.running=true;function tick(){let tt=individual[id];if(!tt.running)return;let el=tt.elapsed+(performance.now()-tt.start)/1000;let node=$('indtime-'+id);if(node)node.textContent=fmt(el);tt.raf=requestAnimationFrame(tick);}tick();renderIndividual();});document.querySelectorAll('[data-indlap]').forEach(b=>b.onclick=()=>indLap(b.dataset.indlap));document.querySelectorAll('[data-indstop]').forEach(b=>b.onclick=()=>{let id=b.dataset.indstop,t=individual[id];if(!t.running)return;t.elapsed+=(performance.now()-t.start)/1000;t.running=false;t.start=null;if(t.raf)cancelAnimationFrame(t.raf);t.raf=null;record(id,t.elapsed,makeSplits(t.laps,t.elapsed,current()?current().distance:0));t.laps=[];renderIndividual();});document.querySelectorAll('[data-indreset]').forEach(b=>b.onclick=()=>{let t=individual[b.dataset.indreset];if(t.raf)cancelAnimationFrame(t.raf);Object.assign(t,{start:null,elapsed:0,running:false,raf:null,laps:[]});renderIndividual();});}
+function renderResults(){
+ let groups={};
+ state.results.forEach((x,index)=>{
+   let k=`${x.date.slice(0,10)}|${x.series}|${x.rep}|${x.distance}`;
+   groups[k]=groups[k]||{key:k,date:x.date,series:x.series,rep:x.rep,distance:x.distance,tom:null,tika:null,taki:null,indices:{}};
+   groups[k][x.runner]=x.time;groups[k].indices[x.runner]=index;(groups[k].targets=groups[k].targets||{})[x.runner]=x.targetTime;
+ });
+ let rows=Object.values(groups).reverse();
+ const cell=(x,id)=>x[id]==null?'—':`${fmt(x[id])}<div class="small">${targetDiffText(id,x[id],x.distance,x.targets&&x.targets[id])}</div><div class="actions" style="gap:5px;margin-top:5px"><button class="secondary mini" data-edit-result="${x.indices[id]}" style="padding:4px 7px;font-size:11px">Corriger</button><button class="danger mini" data-delete-result="${x.indices[id]}" style="padding:4px 7px;font-size:11px">×</button>${(state.results[x.indices[id]].splits||[]).length?`<button class="secondary mini" data-splits="${x.indices[id]}" style="padding:4px 7px;font-size:11px">Tours</button>`:''}</div>`;
+ $('results').innerHTML=rows.length?rows.map(x=>`<tr><td>${new Date(x.date).toLocaleDateString('fr-FR')}</td><td>${esc(x.series)} · #${x.rep}</td><td>${x.distance} m</td><td>${cell(x,'tom')}</td><td>${cell(x,'tika')}</td><td>${cell(x,'taki')}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">Aucun chrono enregistré.</td></tr>';
+ document.querySelectorAll('[data-edit-result]').forEach(b=>b.onclick=()=>editResult(Number(b.dataset.editResult)));
+ document.querySelectorAll('[data-delete-result]').forEach(b=>b.onclick=()=>deleteResult(Number(b.dataset.deleteResult)));
+ document.querySelectorAll('[data-splits]').forEach(b=>b.onclick=()=>showSplits(Number(b.dataset.splits)));
+ renderCoachSummary();
+}
+function editResult(index){
+ const r=state.results[index];if(!r)return;
+ const raw=prompt(`Corriger le chrono de ${runnerName(r.runner)} sur ${r.distance} m (en secondes). Temps actuel : ${Number(r.time).toFixed(2)} s`,String(Number(r.time).toFixed(2)));
+ if(raw===null)return;const n=Number(raw);
+ if(!Number.isFinite(n)||n<=0||n>7200){alert('Entre un temps en secondes valide, supérieur à 0 et inférieur à 2 heures.');return;}
+ r.time=n;if(!Number.isFinite(r.targetTime))r.targetTime=targetSeconds(r.runner,r.distance);r.diff=n-r.targetTime;r.updatedAt=Date.now();save();renderAll();
+}
+function deleteResult(index){
+ const r=state.results[index];if(!r)return;
+ if(!confirm(`Supprimer uniquement le chrono de ${runnerName(r.runner)} (${fmt(r.time)}) ?`))return;
+ const gone=state.results.splice(index,1)[0];state.deleted.results[gone.id]=Date.now();save();renderAll();
+}
+function renderCoachSummary(){
+ const host=$('coachSummary');if(!host)return;
+ const selected=$('filterRunner').value,dist=$('filterDistance').value;
+ const runners=RUNNERS.filter(r=>selected==='all'||selected===r.id);
+ let lines=[];
+ runners.forEach(r=>{
+   let a=state.results.filter(x=>x.runner===r.id&&(dist==='all'||String(x.distance)===dist)).sort((x,y)=>new Date(x.date)-new Date(y.date));
+   if(!a.length){lines.push(`<div class="series-item"><strong>${r.name}</strong><small>Pas encore de résultat pour ce filtre. Enregistre quelques chronos pour obtenir un bilan.</small></div>`);return;}
+   const sameDistance=new Set(a.map(x=>x.distance)).size===1;
+   const recent=a.slice(-Math.min(3,a.length)),avg=recent.reduce((s,x)=>s+x.time,0)/recent.length;
+   const best=Math.min(...a.map(x=>x.time));
+   let note=`Meilleur chrono : ${fmt(best,false)}. `;
+   if(a.length<3) note+=`Encore ${3-a.length} résultat(s) comparable(s) conseillé(s) pour dégager une tendance.`;
+   else {
+     const first=a[0].time,delta=avg-first;
+     if(delta < -1) note+=`Les ${recent.length} derniers résultats sont en moyenne ${fmt(-delta,false)} plus rapides que le premier de la sélection.`;
+     else if(delta > 1) note+=`Les derniers résultats sont en moyenne ${fmt(delta,false)} plus lents que le premier. Vérifie la récupération et les conditions avant d’augmenter l’effort.`;
+     else note+='Les résultats sont relativement stables sur la sélection.';
+   }
+   if(dist==='all'&&new Set(a.map(x=>x.distance)).size>1)note+=' Sélectionne une distance précise pour comparer des efforts équivalents.';
+   lines.push(`<div class="series-item"><strong>${r.name} · ${a.length} chrono(s)</strong><small>${note}</small></div>`);
+ });
+ host.innerHTML=lines.join('');
+}
+function renderDashboard(){let arr=filteredResults(),times=arr.map(x=>x.time).filter(Number.isFinite);let best=times.length?Math.min(...times):null,avg=times.length?times.reduce((a,b)=>a+b,0)/times.length:null;let distances=new Set(arr.map(x=>x.distance)).size;$('stats').innerHTML=`<div class="stat"><strong>${arr.length}</strong><span>Chronos filtrés</span></div><div class="stat"><strong>${best===null?'—':fmt(best)}</strong><span>Meilleur temps filtré</span></div><div class="stat"><strong>${avg===null?'—':fmt(avg)}</strong><span>Moyenne des chronos*</span></div><div class="stat"><strong>${distances}</strong><span>Distances représentées</span></div>`;let rows=[];RUNNERS.filter(r=>$('filterRunner').value==='all'||$('filterRunner').value===r.id).forEach(r=>{let ds=$('filterDistance').value==='all'?[...new Set(state.results.filter(x=>x.runner===r.id).map(x=>x.distance))]:[Number($('filterDistance').value)];ds.sort((a,b)=>a-b).forEach(d=>{let a=state.results.filter(x=>x.runner===r.id&&x.distance===d);if(a.length)rows.push(`<tr><td>${r.name}</td><td>${d} m</td><td>${fmt(Math.min(...a.map(x=>x.time)))}</td><td>${a.length}</td></tr>`);});});$('bestTable').innerHTML=rows.join('')||'<tr><td colspan="4">Aucun résultat pour ce filtre.</td></tr>';drawChart(arr);}
+function drawChart(arr){let c=$('chart'),ctx=c.getContext('2d'),w=c.clientWidth||500,h=230,dpr=window.devicePixelRatio||1;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);let runner=$('filterRunner').value,dist=$('filterDistance').value;let list=arr.filter(x=>(runner==='all'||x.runner===runner)&&(dist==='all'||String(x.distance)===dist));if(!list.length){ctx.fillStyle='#a9b6c9';ctx.font='14px system-ui';ctx.fillText('Les chronos apparaîtront ici.',12,30);return;}let ids=runner==='all'?RUNNERS.map(r=>r.id):[runner];let pad={l:42,r:14,t:18,b:32},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;let vals=list.map(x=>x.time),min=Math.min(...vals),max=Math.max(...vals);if(min===max){min=Math.max(0,min-5);max=max+5;}const x=i=>pad.l+(i/Math.max(1,list.length-1))*cw,y=v=>pad.t+(max-v)/(max-min)*ch;ctx.strokeStyle='#34445d';ctx.lineWidth=1;for(let i=0;i<5;i++){let yy=pad.t+i*ch/4;ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();ctx.fillStyle='#a9b6c9';ctx.font='11px system-ui';ctx.fillText(fmt(max-i*(max-min)/4,false),2,yy+4);}let colors={tom:'#c7f36b',tika:'#8ac8ff',taki:'#ffb86b'};ids.forEach(id=>{let a=list.map((v,i)=>({...v,i})).filter(v=>v.runner===id);if(!a.length)return;ctx.strokeStyle=colors[id];ctx.lineWidth=2;ctx.beginPath();a.forEach((v,i)=>{let xx=x(v.i),yy=y(v.time);if(i===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);});ctx.stroke();a.forEach(v=>{ctx.fillStyle=colors[id];ctx.beginPath();ctx.arc(x(v.i),y(v.time),3,0,Math.PI*2);ctx.fill();});});ctx.fillStyle='#a9b6c9';ctx.font='11px system-ui';ctx.fillText('Chronos enregistrés →',pad.l,h-8);if(runner==='all'){let lx=pad.l;RUNNERS.forEach(r=>{ctx.fillStyle=colors[r.id];ctx.fillRect(lx,4,9,9);ctx.fillStyle='#f4f7fb';ctx.fillText(r.name,lx+13,13);lx+=65;});}}
+function evolution(id,dist){let a=state.results.filter(x=>x.runner===id&&x.distance===dist);if(a.length<2)return 'Pas assez de données';let first=a[0].time,last=a[a.length-1].time,delta=last-first;return `${delta<0?'−':'+'}${fmt(Math.abs(delta))} ${delta<0?'plus rapide':'plus lent'}`;}
+function renderGoals(){$('goalRows').innerHTML=RUNNERS.map(r=>{let p=state.paces[r.id]||r.pace,a=state.results.filter(x=>x.runner===r.id),best=a.length?Math.min(...a.map(x=>x.time)):null,dist=$('filterDistance')?.value||'all',d=dist==='all'?null:Number(dist),sel=a.filter(x=>d===null||x.distance===d);let evo='Pas assez de données';if(sel.length>=2){let delta=sel[sel.length-1].time-sel[0].time;evo=`${delta<0?'−':'+'}${fmt(Math.abs(delta))} ${delta<0?'plus rapide':'plus lent'}`;}return `<tr><td><strong>${r.name}</strong></td><td>${paceText(p)}</td><td>${fmt(p*600,false)}</td><td>${best===null?'—':fmt(best)}</td><td>${evo}</td></tr>`;}).join('');}
+
+function generatePlan(){
+ const level=$('planLevel').value,days=Number($('planDays').value),name=runnerName($('planRunner').value);
+ let weeks;
+ if(level==='beginner') weeks=[
+  ['20 min marche/course facile','20 min marche/course facile','20–25 min marche/course facile'],
+  ['22–25 min faciles','22–25 min faciles','25 min faciles'],
+  ['25 min faciles','25 min faciles','25–30 min faciles'],
+  ['Semaine allégée : 20 min faciles','20 min faciles ou marche','25 min faciles']];
+ else if(level==='regular') weeks=[
+  ['25–30 min faciles','6 × 1 min soutenue / 2 min facile','30–35 min faciles'],
+  ['30 min faciles','5 × 2 min soutenues / 2 min faciles','35–40 min faciles'],
+  ['30 min faciles','6 × 2 min soutenues / 2 min faciles','40 min faciles'],
+  ['Semaine allégée : 25 min faciles','20–25 min faciles','30–35 min faciles']];
+ else weeks=[
+  ['30 min faciles','6 × 2 min soutenues / 2 min faciles','40–45 min faciles'],
+  ['30–35 min faciles','5 × 3 min soutenues / 2 min faciles','45–50 min faciles'],
+  ['35 min faciles','6 × 3 min soutenues / 2 min faciles','50–55 min faciles'],
+  ['Semaine allégée : 25–30 min faciles','25 min faciles','40–45 min faciles']];
+ $('planOutput').innerHTML=`<p><strong>Plan indicatif de ${name} — 4 semaines</strong></p>`+weeks.map((w,i)=>`<div class="series-item" style="display:block;margin-bottom:8px"><strong>Semaine ${i+1}</strong><ul>${(days===2?[w[0],w[2]]:w).map((x,j)=>planItem(x,$('planRunner').value,level,days,i,j)).join('')}</ul></div>`).join('')+`<p class="small">Répète une semaine si nécessaire. Prévois des jours de repos entre les séances et adapte l’effort à tes sensations.</p>`;bindPlan();
+}
+
+function renderAll(){renderPeople();renderSeries();renderShared();renderIndividual();renderResults();renderDashboard();renderGoals();renderTargetFeedback();$('restInfo').textContent=current()&&repIndex>0?`Récupération prévue entre les répétitions : ${current().rest} secondes.`:'';if(window.rtRenderExtra)window.rtRenderExtra();}
+function setMode(m){mode=m;$('sharedMode').classList.toggle('selected',m==='shared');$('individualMode').classList.toggle('selected',m==='individual');$('sharedPane').classList.toggle('hidden',m!=='shared');$('individualPane').classList.toggle('hidden',m!=='individual');}
+$('sharedMode').onclick=()=>setMode('shared');$('individualMode').onclick=()=>setMode('individual');$('makePlan').onclick=generatePlan;
+$('distance').onchange=()=>{$('customWrap').hidden=$('distance').value!=='custom';};
+$('addSeries').onclick=()=>{let d=$('distance').value==='custom'?Number($('customDistance').value):Number($('distance').value),reps=Number($('reps').value),rest=Number($('rest').value),name=$('seriesName').value.trim()||'Série';if(!Number.isFinite(d)||d<50||d>50000||!Number.isInteger(reps)||reps<1||reps>30||rest<0||rest>1800){alert('Vérifiez les paramètres de la série.');return;}state.series.push(rtNewSeries(name,d,reps,rest));activeSeries=state.series.length-1;repIndex=0;resetTimers();save();renderAll();};
+$('starter').onclick=()=>{{const t=Date.now();state.series.forEach(x=>{state.deleted.series[x.id]=t;});state.series=[rtNewSeries('Mise en route',400,3,90,1),rtNewSeries('Série principale',800,4,120,2),rtNewSeries('Retour au calme',400,2,90,3)];}activeSeries=0;repIndex=0;resetTimers();save();renderAll();};
+$('start').onclick=()=>{{const r=restEnd!==null&&prefs.chain;stopRest();if(r)advance();}if(!current()||repIndex>=current().reps)return;unlockAudio();keepAwake(true);sharedFinished={};sharedLaps={};sharedStart=performance.now();renderShared();sharedTick();};
+$('reset').onclick=()=>{stopShared();sharedFinished={};sharedLaps={};$('timer').textContent='00:00.0';renderShared();};
+function advance(){const s=current();if(!s)return;resetTimers();if(repIndex+1<s.reps)repIndex++;else if(activeSeries+1<state.series.length){activeSeries++;repIndex=0;}else repIndex=s.reps;renderAll();}
+$('nextRep').onclick=advance;$('skipRep').onclick=advance;
+$('filterRunner').onchange=()=>{renderDashboard();renderGoals();};$('filterDistance').onchange=()=>{renderDashboard();renderGoals();};
+$('export').onclick=()=>{let rows=[['Date','Série','Répétition','Distance_m','Coureur','Temps_secondes']];state.results.forEach(x=>rows.push([x.date,x.series,x.rep,x.distance,runnerName(x.runner),Number(x.time).toFixed(2)]));download('\ufeff'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n'),'runtogether-resultats.csv','text/csv;charset=utf-8;');};
+function download(content,name,type){let url=URL.createObjectURL(new Blob([content],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);}
+$('exportJson').onclick=()=>download(JSON.stringify(state,null,2),'runtogether-sauvegarde.json','application/json');
+$('importJson').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let obj=JSON.parse(await f.text());if(!Array.isArray(obj.results)||!Array.isArray(obj.series)||!obj.paces)throw new Error('format');if(!confirm('Remplacer les données actuelles par cette sauvegarde ?'))return;state=rtReplaceState(state,obj);save();activeSeries=0;repIndex=0;resetTimers();renderAll();alert('Sauvegarde importée.');}catch(err){alert('Fichier invalide ou incompatible.');}e.target.value='';};
+$('clearHistory').onclick=()=>{if(confirm('Effacer tous les chronos de cet appareil ?')){{const t=Date.now();state.results.forEach(x=>{state.deleted.results[x.id]=t;});}state.results=[];save();renderAll();}};
+window.addEventListener('resize',()=>drawChart(filteredResults()));
+window.addEventListener('rt-cloud-loaded',e=>{if(e.detail&&Array.isArray(e.detail.results)&&Array.isArray(e.detail.series)){const curId=current()?.id;state=rtNormalize(e.detail);const i=state.series.findIndex(x=>x.id===curId);if(i>=0)activeSeries=i;else{activeSeries=0;repIndex=0;resetTimers();}renderAll();}});
+// ---- V0.7 : récupération, bips et enchaînement ----
+const prefs=Object.assign({chain:true,autoStart:false,autoTargets:true},(()=>{try{return JSON.parse(localStorage.getItem('runtogether_prefs')||'null')}catch{return null}})()||{});
+function savePrefs(){localStorage.setItem('runtogether_prefs',JSON.stringify(prefs));}
+let audioCtx=null,wakeLock=null;
+function unlockAudio(){try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();}catch(e){}}
+document.addEventListener('pointerdown',unlockAudio);
+function beep(freq,ms){try{if(audioCtx){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=freq;g.gain.value=.25;o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+ms/1000);}}catch(e){}if(navigator.vibrate)navigator.vibrate(ms);}
+async function keepAwake(on){try{if(on&&'wakeLock' in navigator&&!wakeLock){wakeLock=await navigator.wakeLock.request('screen');wakeLock.addEventListener('release',()=>{wakeLock=null;});}else if(!on&&wakeLock){await wakeLock.release();wakeLock=null;}}catch(e){}}
+function nextTarget(){const s=current();if(!s)return null;if(repIndex+1<s.reps)return{s,rep:repIndex+2};const n=state.series[activeSeries+1];return n?{s:n,rep:1}:null;}
+function stopRest(){clearInterval(restTimerId);restTimerId=null;restEnd=null;lastBeepSec=null;const b=$('restBox');if(b)b.classList.add('hidden');}
+function showRest(label,timerText,withButtons){$('restBox').classList.remove('hidden');$('restLabel').textContent=label;$('restTimer').textContent=timerText;$('restActions').classList.toggle('hidden',!withButtons);}
+function startRest(){
+ const s=current();if(!s||repIndex>=s.reps)return;
+ unlockAudio();stopRest();
+ const nxt=nextTarget();
+ if(!nxt){showRest('Séance terminée, bravo à tous ! 🎉','🎉',false);beep(1200,400);keepAwake(false);return;}
+ if(!(s.rest>0)){finishRest();return;}
+ keepAwake(true);
+ restEnd=performance.now()+s.rest*1000;
+ const label=`Récupération — prochaine : ${nxt.s.name}, répétition ${nxt.rep}/${nxt.s.reps} · ${nxt.s.distance} m`;
+ const tick=()=>{
+   if(restEnd===null)return;
+   const left=(restEnd-performance.now())/1000;
+   if(left<=0){finishRest();return;}
+   const sec=Math.ceil(left);
+   showRest(label,fmt(sec,false),true);
+   if(sec<=3&&sec!==lastBeepSec){lastBeepSec=sec;beep(880,150);}
+ };
+ tick();restTimerId=setInterval(tick,200);
+}
+function finishRest(){
+ const chain=prefs.chain,auto=prefs.autoStart;
+ beep(1200,600);
+ if(chain){stopRest();advance();if(auto&&mode==='shared')$('start').onclick();}
+ else{clearInterval(restTimerId);restTimerId=null;restEnd=null;showRest('Récupération terminée. Touchez « Répétition suivante » quand vous êtes prêts.','00:00',false);}
+}
+$('restAdd').onclick=()=>{if(restEnd!==null)restEnd+=15000;};
+$('restSkipNow').onclick=()=>{if(restEnd!==null)finishRest();};
+$('startRestBtn').onclick=()=>startRest();
+$('optChain').checked=prefs.chain;$('optAutoStart').checked=prefs.autoStart;
+$('optChain').onchange=e=>{prefs.chain=e.target.checked;savePrefs();};
+$('optAutoStart').onchange=e=>{prefs.autoStart=e.target.checked;savePrefs();};
+const LAP=400;
+function makeSplits(laps,total,distance){const exp=Math.ceil(Number(distance)/LAP)-1;if(exp<1||!laps||laps.length!==exp)return null;const out=[];let prev=0;laps.forEach(t=>{out.push(Math.round((t-prev)*10)/10);prev=t;});out.push(Math.round((total-prev)*10)/10);return out;}
+function expLaps(s){return s?Math.ceil(Number(s.distance)/LAP)-1:0;}
+function lapBtn(r){const s=current(),exp=expLaps(s);if(exp<1)return '';const L=sharedLaps[r.id]||[],done=sharedFinished[r.id]!==undefined;const txt=L.length?`<div class="small" style="text-align:center">${L.map((t,i)=>fmt(t-(i?L[i-1]:0),false)).join(' · ')}</div>`:'';return `<button class="secondary mini" style="width:100%;margin-top:6px" data-rlap="${r.id}" ${(sharedStart===null||done||L.length>=exp)?'disabled':''}>Passage ${Math.min(L.length+1,exp)} / ${exp}</button>${txt}`;}
+function repLap(id){const s=current(),exp=expLaps(s);if(sharedStart===null||exp<1||sharedFinished[id]!==undefined)return;const L=sharedLaps[id]=sharedLaps[id]||[];if(L.length>=exp)return;const t=sharedElapsed();if(L.length&&t-L[L.length-1]<2)return;L.push(Math.round(t*10)/10);if(navigator.vibrate)navigator.vibrate(30);renderShared();}
+function indLapBtn(id){const s=current(),exp=expLaps(s);if(exp<1)return '';const t=individual[id],n=(t.laps||[]).length;return `<button class="secondary" data-indlap="${id}" ${(!t.running||n>=exp)?'disabled':''}>Passage ${Math.min(n+1,exp)}/${exp}</button>`;}
+function indLap(id){const t=individual[id],exp=expLaps(current());if(!t.running||exp<1)return;t.laps=t.laps||[];const n=t.laps.length;if(n>=exp)return;const el=t.elapsed+(performance.now()-t.start)/1000;if(n&&el-t.laps[n-1]<2)return;t.laps.push(Math.round(el*10)/10);if(navigator.vibrate)navigator.vibrate(30);renderIndividual();}
+
+renderAll();
+</script>
+<script src="./progress.js"></script>
+<script src="./extras.js"></script>
+<script type="module" src="./sync.js"></script>
+</body></html>
